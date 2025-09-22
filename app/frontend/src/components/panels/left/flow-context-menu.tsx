@@ -3,15 +3,31 @@ import { cn } from '@/lib/utils';
 import { Copy, Edit, Trash2 } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 
+/**
+ * Props for the FlowContextMenu component
+ */
 interface FlowContextMenuProps {
+  /** Whether the context menu is currently visible */
   isOpen: boolean;
+  /** Position coordinates where the menu should appear */
   position: { x: number; y: number };
+  /** Callback function to close the menu */
   onClose: () => void;
+  /** Callback function to handle edit action */
   onEdit: () => void;
+  /** Callback function to handle duplicate action */
   onDuplicate: () => void;
+  /** Callback function to handle delete action */
   onDelete: () => void;
 }
 
+/**
+ * A context menu component that provides edit, duplicate, and delete actions for flow elements.
+ * The menu appears at a specified position and closes when clicking outside or pressing Escape.
+ * 
+ * @param props - The component props
+ * @returns The rendered context menu or null if not open
+ */
 export function FlowContextMenu({ 
   isOpen, 
   position, 
@@ -23,12 +39,18 @@ export function FlowContextMenu({
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    /**
+     * Handles clicks outside the menu to close it
+     */
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         onClose();
       }
     };
 
+    /**
+     * Handles escape key press to close the menu
+     */
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         onClose();
@@ -48,6 +70,10 @@ export function FlowContextMenu({
 
   if (!isOpen) return null;
 
+  /**
+   * Executes an action and closes the menu
+   * @param action - The action function to execute
+   */
   const handleAction = (action: () => void) => {
     action();
     onClose();
@@ -98,4 +124,4 @@ export function FlowContextMenu({
       </div>
     </div>
   );
-} 
+}
