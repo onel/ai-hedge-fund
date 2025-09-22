@@ -14,13 +14,25 @@ import { flowService } from '@/services/flow-service';
 import { Flow } from '@/types/flow';
 import { useEffect, useState } from 'react';
 
+/**
+ * Props for the FlowEditDialog component
+ */
 interface FlowEditDialogProps {
+  /** The flow object to edit, or null if no flow is selected */
   flow: Flow | null;
+  /** Whether the dialog is currently open */
   isOpen: boolean;
+  /** Callback function to close the dialog */
   onClose: () => void;
+  /** Callback function called after a flow is successfully updated */
   onFlowUpdated: () => void;
 }
 
+/**
+ * Dialog component for editing flow name and description
+ * @param props - The component props
+ * @returns JSX element representing the flow edit dialog
+ */
 export function FlowEditDialog({ flow, isOpen, onClose, onFlowUpdated }: FlowEditDialogProps) {
   const [name, setName] = useState(flow?.name || '');
   const [description, setDescription] = useState(flow?.description || '');
@@ -36,6 +48,10 @@ export function FlowEditDialog({ flow, isOpen, onClose, onFlowUpdated }: FlowEdi
     }
   }, [flow]);
 
+  /**
+   * Handles saving the updated flow data
+   * @returns Promise that resolves when the save operation completes
+   */
   const handleSave = async () => {
     if (!flow || !name.trim()) {
       error('Flow name is required');
@@ -63,6 +79,9 @@ export function FlowEditDialog({ flow, isOpen, onClose, onFlowUpdated }: FlowEdi
     }
   };
 
+  /**
+   * Handles canceling the edit operation and resets form fields
+   */
   const handleCancel = () => {
     if (flow) {
       setName(flow.name);
@@ -71,6 +90,10 @@ export function FlowEditDialog({ flow, isOpen, onClose, onFlowUpdated }: FlowEdi
     onClose();
   };
 
+  /**
+   * Handles keyboard shortcuts for the form inputs
+   * @param e - The keyboard event
+   */
   const handleKeyDown = (e: React.KeyboardEvent) => {
     // Handle Cmd+Enter (Mac) or Ctrl+Enter (Windows/Linux)
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
@@ -99,6 +122,10 @@ export function FlowEditDialog({ flow, isOpen, onClose, onFlowUpdated }: FlowEdi
             <Input
               id="name"
               value={name}
+              /**
+               * Updates the name state when input value changes
+               * @param e - The change event from the input
+               */
               onChange={(e) => setName(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Enter flow name"
@@ -113,6 +140,10 @@ export function FlowEditDialog({ flow, isOpen, onClose, onFlowUpdated }: FlowEdi
             <Input
               id="description"
               value={description}
+              /**
+               * Updates the description state when input value changes
+               * @param e - The change event from the input
+               */
               onChange={(e) => setDescription(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder="Enter flow description (optional)"
@@ -135,4 +166,4 @@ export function FlowEditDialog({ flow, isOpen, onClose, onFlowUpdated }: FlowEdi
       </DialogContent>
     </Dialog>
   );
-} 
+}

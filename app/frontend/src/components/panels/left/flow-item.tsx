@@ -15,16 +15,32 @@ import { useState } from 'react';
 import { FlowContextMenu } from './flow-context-menu';
 import { FlowEditDialog } from './flow-edit-dialog';
 
+/**
+ * Props for the FlowItem component
+ */
 interface FlowItemProps {
+  /** The flow object to display */
   flow: Flow;
+  /** Callback function to load a flow */
   onLoadFlow: (flow: Flow) => Promise<void>;
+  /** Callback function to delete a flow */
   onDeleteFlow: (flow: Flow) => Promise<void>;
+  /** Callback function to refresh the flow list */
   onRefresh: () => Promise<void>;
+  /** Whether this flow item is currently active */
   isActive?: boolean;
 }
 
+/**
+ * A component that renders a single flow item in the flow list.
+ * Displays flow information, connection status, and provides interaction options
+ * through context menus and click handlers.
+ * 
+ * @param props - The component props
+ * @returns The rendered flow item component
+ */
 export default function FlowItem({ flow, onLoadFlow, onDeleteFlow, onRefresh, isActive = false }: FlowItemProps) {
-  const [contextMenu, setContextMenu] = useState<{ isOpen: boolean; position: { x: number; y: number } }>({
+  const [contextMenu, setContextMenu] = useState<{ isOpen: boolean; position: { x: number; y: number } }>(({
     isOpen: false,
     position: { x: 0, y: 0 }
   });
@@ -35,10 +51,18 @@ export default function FlowItem({ flow, onLoadFlow, onDeleteFlow, onRefresh, is
   const hasActiveConnection = connectionState && 
     (connectionState.state === 'connecting' || connectionState.state === 'connected');
 
+  /**
+   * Handles loading the flow by calling the onLoadFlow callback
+   */
   const handleLoadFlow = async () => {
     await onLoadFlow(flow);
   };
 
+  /**
+   * Handles right-click context menu events on the flow item
+   * 
+   * @param e - The mouse event from the right-click
+   */
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -49,6 +73,11 @@ export default function FlowItem({ flow, onLoadFlow, onDeleteFlow, onRefresh, is
     });
   };
 
+  /**
+   * Handles clicks on the menu button to show the context menu
+   * 
+   * @param e - The mouse event from the button click
+   */
   const handleMenuClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     
@@ -60,14 +89,24 @@ export default function FlowItem({ flow, onLoadFlow, onDeleteFlow, onRefresh, is
     });
   };
 
+  /**
+   * Closes the context menu by updating its state
+   */
   const closeContextMenu = () => {
     setContextMenu(prev => ({ ...prev, isOpen: false }));
   };
 
+  /**
+   * Opens the edit dialog for the flow
+   */
   const handleEdit = () => {
     setEditDialog(true);
   };
 
+  /**
+   * Duplicates the current flow using the flow service
+   * and refreshes the flow list on success
+   */
   const handleDuplicateFlow = async () => {
     try {
       await flowService.duplicateFlow(flow.id);
@@ -77,6 +116,10 @@ export default function FlowItem({ flow, onLoadFlow, onDeleteFlow, onRefresh, is
     }
   };
 
+  /**
+   * Deletes the flow after user confirmation
+   * Shows a confirmation dialog before proceeding with deletion
+   */
   const handleDeleteFlow = async () => {
     if (window.confirm(`Are you sure you want to delete "${flow.name}"?`)) {
       try {
@@ -87,6 +130,12 @@ export default function FlowItem({ flow, onLoadFlow, onDeleteFlow, onRefresh, is
     }
   };
 
+  /**
+   * Formats a date string into a localized date and time format
+   * 
+   * @param dateString - The ISO date string to format
+   * @returns The formatted date and time string
+   */
   const formatDateTime = (dateString: string) => {
     return new Date(dateString).toLocaleString('en-US', {
       month: 'short',
@@ -198,4 +247,4 @@ export default function FlowItem({ flow, onLoadFlow, onDeleteFlow, onRefresh, is
       />
     </>
   );
-} 
+}
